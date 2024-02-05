@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <TargetFramework>net6.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Silk.NET.Core" Version="2.20.0" />
+    <PackageReference Include="Silk.NET.WebGPU.Extensions.WGPU" Version="2.20.0" />
+    <PackageReference Include="Silk.NET.WebGPU.Native.WGPU" Version="2.20.0" />
+  </ItemGroup>
+
+</Project>
