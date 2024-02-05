@@ -132,6 +132,9 @@ namespace GPU_VIEWS.Eto.Controls
 
         private void RecreateSwapchain(int width, int height)
         {
+            if (width == 0 || height == 0)
+                return;
+
             unsafe
             {
                 var c = new SurfaceConfiguration

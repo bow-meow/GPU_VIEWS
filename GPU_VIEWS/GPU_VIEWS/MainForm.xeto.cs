@@ -19,9 +19,13 @@ namespace GPU_VIEWS
     public class MainForm : Form
     {
         StackLayout MainStack;
+        TableLayout MainTable;
         public MainForm()
         {
             XamlReader.Load(this);
+
+            MainStack = new StackLayout();
+            MainTable = new TableLayout();
 
             for(int i = 0; i < 40; i++)
             {
@@ -34,6 +38,18 @@ namespace GPU_VIEWS
                 view.BackgroundColor = Colors.Transparent;
                 MainStack.Items.Add(view);
             }
+
+            var v = new WgpuView();
+            var im = SixLabors.ImageSharp.Image.Load<Rgba32>("C:\\Users\\Blunt\\Pictures\\Kaioken_high_quality.png");
+            v.Image = im;
+            v.Size = new EtoSize(1000, 1000);
+
+            var scroll = new Scrollable();
+            scroll.Content = MainStack;
+
+            MainTable.Rows.Add(new TableRow(new TableCell(scroll, true), new TableCell(v, false)));
+
+            Content = MainTable;
         }
 
         public void DrawStuff(SixLabors.ImageSharp.Image<Rgba32> image)

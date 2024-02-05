@@ -7,11 +7,6 @@
 	MinimumSize="200,200"
 	Padding="10"
 	>
-	<Scrollable>
-		<StackLayout ID="MainStack">
-	</StackLayout>
-	</Scrollable>
-
 
 	<Form.Menu>
 		<MenuBar>
