@@ -1,5 +1,7 @@
 ﻿using Eto.Forms;
+using GPU_VIEWS.Eto.Controls;
 using System;
+using plat = Eto.Platforms;
 
 namespace GPU_VIEWS.Mac
 {
@@ -8,7 +10,9 @@ namespace GPU_VIEWS.Mac
         [STAThread]
         public static void Main(string[] args)
         {
-            //new Application(Eto.Platforms.Mac64).Run(new MainForm());
+            var app = new Application(plat.macOS);
+            app.Platform.Add<WgpuView.IHandler>(() => new MacWgpuViewHandler());
+            app.Run(new MainForm());
         }
     }
 }

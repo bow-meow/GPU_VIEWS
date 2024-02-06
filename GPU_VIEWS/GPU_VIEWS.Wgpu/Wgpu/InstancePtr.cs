@@ -1,4 +1,5 @@
-﻿using Silk.NET.Core.Native;
+﻿using GPU_VIEWS.Wgpu.Wgpu.MacOS;
+using Silk.NET.Core.Native;
 using Silk.NET.WebGPU;
 using System;
 using System.Collections.Generic;
@@ -76,16 +77,28 @@ namespace Wgpu
 
         public SurfacePtr CreateSurfaceFromMetalLayer(IntPtr layer, string? label = null)
         {
-            var descriptor = new SurfaceDescriptorFromMetalLayer
+            // Based on the Veldrid Metal bindings implementation:
+            // https://github.com/veldrid/veldrid/tree/master/src/Veldrid.MetalBindings
+            var view = new NSView(layer);
+            CAMetalLayer metalLayer = CAMetalLayer.New();
+            view.wantsLayer = true;
+            view.layer = metalLayer.NativePtr;
+
+            var cocoaDescriptor = new SurfaceDescriptorFromMetalLayer
             {
-                Chain = new ChainedStruct(sType: SType.SurfaceDescriptorFromMetalLayer),
-                Layer = (void*)layer
+                Chain = new ChainedStruct
+                {
+                    Next = null,
+                    SType = SType.SurfaceDescriptorFromMetalLayer
+                },
+                Layer = (void*)metalLayer.NativePtr
             };
+
             using var marshalledLabel = new MarshalledString(label, NativeStringEncoding.UTF8);
 
             return new SurfacePtr(_wgpu, _wgpu.InstanceCreateSurface(_ptr, new SurfaceDescriptor(
                 label: marshalledLabel.Ptr,
-                nextInChain: &descriptor.Chain
+                nextInChain: (ChainedStruct*)(&cocoaDescriptor)
                 )));
         }
 

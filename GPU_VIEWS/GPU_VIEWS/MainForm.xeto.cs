@@ -13,6 +13,8 @@ using System.Collections.Generic;
 using Color = SixLabors.ImageSharp.Color;
 using SharpSize = SixLabors.ImageSharp.Size;
 using EtoSize = Eto.Drawing.Size;
+using System.IO;
+using System.Reflection;
 
 namespace GPU_VIEWS
 {
@@ -30,7 +32,7 @@ namespace GPU_VIEWS
             for(int i = 0; i < 40; i++)
             {
                 MainStack.Spacing = 20;
-                var img = SixLabors.ImageSharp.Image.Load<Rgba32>("C:\\Users\\Blunt\\Pictures\\Kaioken_high_quality.png");
+                var img = SixLabors.ImageSharp.Image.Load<Rgba32>(GetImage());
                 DrawStuff(img);
                 var view = new WgpuView();
                 view.Image = img;
@@ -40,7 +42,7 @@ namespace GPU_VIEWS
             }
 
             var v = new WgpuView();
-            var im = SixLabors.ImageSharp.Image.Load<Rgba32>("C:\\Users\\Blunt\\Pictures\\Kaioken_high_quality.png");
+            var im = SixLabors.ImageSharp.Image.Load<Rgba32>(GetImage());
             v.Image = im;
             v.Size = new EtoSize(1000, 1000);
 
@@ -52,31 +54,34 @@ namespace GPU_VIEWS
             Content = MainTable;
         }
 
+        public Stream GetImage()
+        {
+            var resourceName = "GPU_VIEWS.assets.Kaioken_high_quality.png";
+
+            var assembly = Assembly.GetExecutingAssembly();
+
+            return assembly.GetManifestResourceStream(resourceName);
+        }
+
         public void DrawStuff(SixLabors.ImageSharp.Image<Rgba32> image)
         {
             string topText = "Top Text";
             string bottomText = "Bottom Text";
 
-            // Define the font for your text
             SixLabors.Fonts.Font font = SixLabors.Fonts.SystemFonts.CreateFont("Arial", 20, SixLabors.Fonts.FontStyle.Bold);
 
             var txtop = new TextOptions(font);
 
-
-            // Define the color for your text
             var textColor = Color.White;
 
-            // Define the border color and width
-            var borderColor = Color.FromRgba(100, 0, 0, 200); // Adjust the alpha value for transparency
+            var borderColor = Color.FromRgba(100, 0, 0, 200);
             var borderWidth = 20;
-            var borderLeftWidth = 10; // Width of the left border
-            var borderRightWidth = 10; // Width of the right border
+            var borderLeftWidth = 10;
+            var borderRightWidth = 10;
 
-            // Calculate the position for top and bottom text
             var topTextPosition = new SixLabors.ImageSharp.PointF(image.Width / 2, borderWidth);
             var bottomTextPosition = new SixLabors.ImageSharp.PointF(image.Width / 2, image.Height - borderWidth);
 
-            // Draw the borders
             image.Mutate(ctx => ctx
                 .Fill(borderColor, new SixLabors.ImageSharp.RectangleF(0, 0, image.Width, borderWidth))
                 .Fill(borderColor, new SixLabors.ImageSharp.RectangleF(0, image.Height - borderWidth, image.Width, borderWidth))
@@ -84,13 +89,11 @@ namespace GPU_VIEWS
                 .Fill(borderColor, new SixLabors.ImageSharp.RectangleF(image.Width - borderRightWidth, borderWidth, borderRightWidth, image.Height - 2 * borderWidth))
             );
 
-            // Draw the borders
             image.Mutate(ctx => ctx
                 .Fill(borderColor, new SixLabors.ImageSharp.RectangleF(0, 0, image.Width, borderWidth))
                 .Fill(borderColor, new SixLabors.ImageSharp.RectangleF(0, image.Height - borderWidth, image.Width, borderWidth))
             );
 
-            // Draw the text at the top and bottom
             image.Mutate(ctx => ctx
                 .DrawText(topText, font, textColor, topTextPosition)
                 .DrawText(bottomText, font, textColor, bottomTextPosition)

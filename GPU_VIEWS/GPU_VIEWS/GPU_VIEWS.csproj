@@ -14,4 +14,10 @@
     <ProjectReference Include="..\GPU_VIEWS.Eto\GPU_VIEWS.Eto.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Remove="assets\Kaioken_high_quality.PNG" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="assets\Kaioken_high_quality.png" />
+  </ItemGroup>
 </Project>
