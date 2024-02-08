@@ -1,4 +1,4 @@
-﻿using GPU_VIEWS.Wgpu.Wgpu.MacOS;
+using GPU_VIEWS.Wgpu.Wgpu.MacOS;
 using Silk.NET.Core.Native;
 using Silk.NET.WebGPU;
 using System;
