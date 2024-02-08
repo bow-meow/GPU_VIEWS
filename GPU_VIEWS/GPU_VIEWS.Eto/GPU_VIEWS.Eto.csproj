@@ -1,0 +1,31 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="shaders\quadih.wgsl" />
+    <None Remove="shaders\rgb_balance.wgsl" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="shaders\quadih.wgsl" />
+    <EmbeddedResource Include="shaders\rgb_balance.wgsl" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Eto.Forms" Version="2.8.2" />
+    <PackageReference Include="Silk.NET.Maths" Version="2.20.0" />
+    <PackageReference Include="Silk.NET.WebGPU.Extensions.WGPU" Version="2.20.0" />
+    <PackageReference Include="Silk.NET.WebGPU.Native.WGPU" Version="2.20.0" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="3.1.2" />
+    <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="2.1.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\GPU_VIEWS.Wgpu\GPU_VIEWS.Wgpu.csproj" />
+  </ItemGroup>
+
+</Project>

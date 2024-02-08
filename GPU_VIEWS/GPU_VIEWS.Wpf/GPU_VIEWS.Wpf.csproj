@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net6.0-windows</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Views\**" />
+    <EmbeddedResource Remove="Views\**" />
+    <None Remove="Views\**" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\GPU_VIEWS.Eto\GPU_VIEWS.Eto.csproj" />
+    <ProjectReference Include="..\GPU_VIEWS.Wgpu\GPU_VIEWS.Wgpu.csproj" />
+    <ProjectReference Include="..\GPU_VIEWS\GPU_VIEWS.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Eto.Forms" Version="2.8.2" />
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.0" PrivateAssets="all" />
+    <PackageReference Include="Eto.Platform.Wpf" Version="2.8.2" />
+    <PackageReference Include="Silk.NET.Core" Version="2.20.0" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="3.1.2" />
+  </ItemGroup>
+
+</Project>
