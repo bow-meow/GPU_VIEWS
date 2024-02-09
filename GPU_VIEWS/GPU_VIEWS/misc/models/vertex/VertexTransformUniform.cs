@@ -18,18 +18,5 @@ namespace GPU_VIEWS.misc
 		}
 
 		public Matrix4X4<float> Transform { get; }
-
-		public unsafe BufferInternal CreateBuffer(DevicePtr device)
-		{
-			var buffer_size = (ulong)Unsafe.SizeOf<VertexTransformUniform>();
-
-			var buffer = device.CreateBuffer(BufferUsage.Uniform | BufferUsage.CopyDst, buffer_size);
-
-			var queue = device.GetQueue();
-
-			queue.WriteBuffer(buffer, 0, new ReadOnlySpan<VertexTransformUniform>(new[] { this }));
-
-			return new BufferInternal(buffer, buffer_size);
-		}
 	}
 }

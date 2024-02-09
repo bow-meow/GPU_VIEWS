@@ -8,11 +8,11 @@ using Silk.NET.Maths;
 using Silk.NET.WebGPU;
 using SixLabors.ImageSharp.PixelFormats;
 using Wgpu;
-using WGPU_TEST.models.core.filters;
+using wgpu = Wgpu;
 
 namespace GPU_VIEWS.renderers
 {
-    public class WgpuThumbnailRenderer : IWgpuRenderer, IFontStashRenderer2
+    public class WgpuThumbnailRenderer : IWgpuRenderer
     {
         private readonly Vertex[] _quad;
         private readonly uint[] _indexMap;
@@ -29,6 +29,8 @@ namespace GPU_VIEWS.renderers
         private BindGroupInternal _textureBindGroup;
         private BindGroupInternal _sampleBindGroup;
 
+        private RenderPiplineInternal _renderPipeline;
+
 
         // TODO:(ALEX) these need to be removed
         private WgpuView _view;
@@ -39,8 +41,16 @@ namespace GPU_VIEWS.renderers
         {
             _view = view;
 
-            (_quad, _indexMap) = Vertex.GetFullScreenQuad();
+            TextRenderer = new TextRenderer(view);
             TextureManager = new TextureManager(view.Device, view.TextureFormat);
+            ResourceManager = new ResourceManager(view.Device);
+
+            _view.Device.SetUncapturedErrorCallback(new wgpu.ErrorCallback((err, str) =>
+            {
+                var a = 1;
+            }));
+
+            (_quad, _indexMap) = Vertex.GetFullScreenQuad();
 
             _vertexBuffer = ResourceManager.CreateBuffer(new BufferDesc(
                 bufferUsage: BufferUsage.Vertex | BufferUsage.CopyDst,
@@ -48,7 +58,7 @@ namespace GPU_VIEWS.renderers
             
             _indexBuffer = ResourceManager.CreateBuffer(new BufferDesc(
                 bufferUsage: BufferUsage.Index | BufferUsage.CopyDst,
-                size: (ulong)(sizeof(int) * _quad.Length)
+                size: (ulong)(sizeof(int) * _indexMap.Length)
             ));
 
             var queue = view.Device.GetQueue();
@@ -73,8 +83,7 @@ namespace GPU_VIEWS.renderers
 
         public ITextureManager TextureManager { get; }
         public IResourceManager ResourceManager { get; }
-
-        ITexture2DManager IFontStashRenderer2.TextureManager => TextureManager;
+        public ITextRenderer TextRenderer { get; }
 
         private unsafe void CreateVertexBindgroup()
 		{
@@ -98,9 +107,9 @@ namespace GPU_VIEWS.renderers
 				new BindGroupEntry
 				{
 					Binding = 0,
-					Buffer = _vertexBuffer.Buffer,
+					Buffer = _quadUniformLayout.BufferInternal.Buffer,
 					Offset = 0,
-					Size = _vertexBuffer.BufferSize,
+					Size = _quadUniformLayout.BufferInternal.BufferSize,
 				}
 			}));
 		}
@@ -124,7 +133,7 @@ namespace GPU_VIEWS.renderers
 
             var queue = _view.Device.GetQueue();
 
-            queue.WriteTexture<byte>(new Wgpu.ImageCopyTexture
+            queue.WriteTexture<byte>(new wgpu.ImageCopyTexture
             {
                 Texture = _texture.Texture,
                 Aspect = TextureAspect.All,
@@ -216,20 +225,36 @@ namespace GPU_VIEWS.renderers
 
         private void CreateRenderPipeline()
         {
-            ResourceManager.CreateRenderPipeline(new RenderPipelineDesc(
+            _renderPipeline = ResourceManager.CreateRenderPipeline(new RenderPipelineDesc(
                 new ReadOnlySpan<BindGroupLayoutPtr>(new BindGroupLayoutPtr[]
                 {
                     _textureBindGroup.BindGroupLayout,
                     _sampleBindGroup.BindGroupLayout,
                     _vertexBindGroup.BindGroupLayout
                 }),
-                _quadUniformLayout.ShaderModule,
+                vertexState: new wgpu.VertexState
+                {
+                    ShaderModule = _quadUniformLayout.ShaderModule,
+                    EntryPoint = "vs_main",
+                    Constants = new (string key, double value)[] { },
+                    Buffers = new wgpu.VertexBufferLayout[]
+                    {
+                        new wgpu.VertexBufferLayout((ulong)Unsafe.SizeOf<Vertex>(), VertexStepMode.Vertex,
+                        new VertexAttribute[]
+                        {
+                            new VertexAttribute(VertexFormat.Float32x3, 0, 0),
+                            new VertexAttribute(VertexFormat.Float32x2, (uint)Unsafe.SizeOf<Vector3D<float>>(), 1)
+                        })
+                    }
+                },
                 _sampleUniformLayout.ShaderModule,
-                TextureFormat.Rgba8UnormSrgb));
+                _view.TextureFormat));
         }
 
         public void Initialize(SixLabors.ImageSharp.Image<Rgba32> image)
         {
+            TextRenderer.Initialize(image);
+            
 			ImageWidth = image.Width;
 			ImageHeight = image.Height;
 
@@ -248,7 +273,74 @@ namespace GPU_VIEWS.renderers
 
         public virtual void Render()
         {
-            throw new System.NotImplementedException();
+            CreateVertexBindgroup();
+
+			CreateBindGroup1();
+
+			CreateRenderPipeline();
+
+			var commandEncoder = ResourceManager.CreateCommandEncoder("encoder");
+
+			var surface_tex = _view.Surface.GetCurrentTexture();
+
+			var render_pass = commandEncoder.BeginRenderPass(colorAttachments: new ReadOnlySpan<wgpu.RenderPassColorAttachment>(new wgpu.RenderPassColorAttachment[]
+            {
+                new wgpu.RenderPassColorAttachment
+                {
+                    View = surface_tex.Texture.CreateView(),
+                    ResolveTarget = default,
+                    LoadOp = LoadOp.Clear,
+                    StoreOp = StoreOp.Store,
+                    ClearValue = new Silk.NET.WebGPU.Color
+                    {
+                        R = 1.0,
+                        G = 1.0,
+                        B = 1.0,
+                        A = 1.0
+                    },
+                }
+
+            } ));
+            
+            render_pass.SetPipeline(_renderPipeline.RenderPipeline);
+            render_pass.SetBindGroup(0, _textureBindGroup.BindGroup, ReadOnlySpan<uint>.Empty);
+            render_pass.SetBindGroup(1, _sampleBindGroup.BindGroup, ReadOnlySpan<uint>.Empty);
+			render_pass.SetBindGroup(2, _vertexBindGroup.BindGroup, ReadOnlySpan<uint>.Empty);
+            render_pass.SetVertexBuffer(0, _vertexBuffer.Buffer, 0, _vertexBuffer.BufferSize);
+            render_pass.SetIndexBuffer(_indexBuffer.Buffer, IndexFormat.Uint32, 0, _indexBuffer.BufferSize);
+
+            render_pass.DrawIndexed((uint)_indexMap.Length, 1, 0, 0, 0);
+
+            TextRenderer.Render(render_pass);
+
+            render_pass.End();
+
+            var queue = ResourceManager.GetQueue();
+
+            var commandBuffer = commandEncoder.Finish(null);
+            ;
+            queue.Submit(new ReadOnlySpan<wgpu.CommandBufferPtr>(new[] { commandBuffer }));
+            _view.Surface.Present();
+
+			_view.RecreateSwapchain();
+		    
+            //unsafe
+            //{
+            //    wgpu.TryGetDeviceExtension(null, out Wgpu wgpuSpecific);
+            //    wgpuSpecific.DevicePoll(device, true, null);
+            //}
+            //swapchain = device.CreateSwapChain(surface, TextureUsage.RenderAttachment, tex_format, (uint)size.Width, (uint)size.Height, PresentMode.Fifo);
+            //swapchain = device.CreateSwapChain(surface, TextureUsage.RenderAttachment, texture_format, (uint)500, (uint)500, PresentMode.Fifo);
+            //bind_tex.Destroy();
+            //output_buffer.Unmap();
+            //_uniform_buffer.Destroy();
+
+            //wgpuSpecific.TextureDrop(tex);
+            //wgpuSpecific.TextureViewDrop(tex_view);
+            //wgpuSpecific.RenderPipelineDrop(pipeline);
+            //wgpuSpecific.BindGroupDrop(tex_sampler_bindgroup);
+            //wgpuSpecific.BindGroupDrop(frag_uniform_bindgroup);
+            //wgpu.BufferUnmap(output_buffer);
         }
 
         public void DrawQuad(object texture, ref VertexPositionColorTexture topLeft, ref VertexPositionColorTexture topRight, ref VertexPositionColorTexture bottomLeft, ref VertexPositionColorTexture bottomRight)

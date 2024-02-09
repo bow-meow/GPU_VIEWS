@@ -12,8 +12,13 @@ namespace WGPU_TEST
         // Misc
         [ResourceAttr("GPU_VIEWS.misc.shaders.sample.wgsl")]
         Sample,
+        [ResourceAttr("GPU_VIEWS.misc.shaders.font.wgsl")]
+        Font,
 
         // CORE
+        
+        [ResourceAttr("GPU_VIEWS.misc.shaders.quad_font.wgsl")]
+        QuadFont,
         [ResourceAttr("GPU_VIEWS.misc.shaders.quadih.wgsl")]
         Quad,
         Border,

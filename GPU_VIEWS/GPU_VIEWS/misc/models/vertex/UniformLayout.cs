@@ -1,11 +1,11 @@
+using GPU_VIEWS.msic;
 using Wgpu;
-using WGPU_TEST.models.core.filters;
 
 namespace GPU_VIEWS.misc
 {
     public readonly struct UniformLayout
     {
-        public UniformLayout(IUniform uniform,
+        public UniformLayout(object uniform,
         BufferInternal buffer,
         ShaderModulePtr shaderModule)
         {
@@ -14,7 +14,7 @@ namespace GPU_VIEWS.misc
             ShaderModule = shaderModule;
         }
 
-        public IUniform Uniform { get; }
+        public object Uniform { get; }
         public BufferInternal BufferInternal { get; }
         public ShaderModulePtr ShaderModule { get; }
     }

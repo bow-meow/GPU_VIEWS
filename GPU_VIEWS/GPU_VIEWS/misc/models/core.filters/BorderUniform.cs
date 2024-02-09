@@ -5,7 +5,7 @@ using System;
 using System.Runtime.CompilerServices;
 using Wgpu;
 
-namespace WGPU_TEST.models.core.filters
+namespace GPU_VIEWS.msic.models.core.filters
 {
     public struct BorderUniform : IUniform
     {

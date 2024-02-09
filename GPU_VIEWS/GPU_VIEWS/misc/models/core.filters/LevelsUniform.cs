@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Wgpu;
 
-namespace WGPU_TEST.models.core.filters
+namespace GPU_VIEWS.msic.models.core.filters
 {
     //[StructLayout(LayoutKind.Explicit)]
     public struct LevelsUniform : IUniform

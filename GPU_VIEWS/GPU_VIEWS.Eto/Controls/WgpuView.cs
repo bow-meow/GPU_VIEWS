@@ -97,15 +97,10 @@ namespace GPU_VIEWS.Eto.Controls
         }
         private SurfaceCapabilities _surfaceCapabilities;
 
-        private WgpuImageProcessor _renderer;
-        public WgpuImageProcessor Renderer
+        private IWgpuRenderer _renderer;
+        public IWgpuRenderer Renderer
         {
-            get
-            {
-                if(_renderer == null)
-                    _renderer = new WgpuImageProcessor(this);
-                return _renderer;
-            } 
+            get => _renderer;
             set
             {
                 // DISPOSE
@@ -132,9 +127,6 @@ namespace GPU_VIEWS.Eto.Controls
 
         private void RecreateSwapchain(int width, int height)
         {
-            if (width == 0 || height == 0)
-                return;
-
             unsafe
             {
                 var c = new SurfaceConfiguration
@@ -181,7 +173,10 @@ namespace GPU_VIEWS.Eto.Controls
             OnVeldridInitialized(e);
         }
 
-        protected virtual void OnDraw(EventArgs e) => Properties.TriggerEvent(DrawEvent, this, e);
+        protected virtual void OnDraw(EventArgs e)
+        {
+            Properties.TriggerEvent(DrawEvent, this, e);
+        }
 
         protected virtual void OnResize(ResizeEventArgs e)
         {
@@ -195,8 +190,6 @@ namespace GPU_VIEWS.Eto.Controls
 
         protected virtual void OnVeldridInitialized(InitializeEventArgs e)
         {
-            Renderer.Setup();
-            Renderer.Render();
             Properties.TriggerEvent(WgpuInitializedEvent, this, e);
         }
     }

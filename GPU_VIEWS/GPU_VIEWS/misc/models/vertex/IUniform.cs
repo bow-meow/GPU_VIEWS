@@ -1,7 +1,7 @@
 ﻿using GPU_VIEWS.misc;
 using Wgpu;
 
-namespace WGPU_TEST.models.core.filters
+namespace GPU_VIEWS.misc
 {
     public interface IUniform
     {

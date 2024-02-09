@@ -10,7 +10,7 @@ using Wgpu;
 using GPU_VIEWS.misc;
 using System.Runtime.CompilerServices;
 
-namespace WGPU_TEST.models.image
+namespace GPU_VIEWS.msic.models.image
 {
     public struct TiledBackgroundUniform : IUniform
     {

@@ -1,21 +1,23 @@
 using System;
-using System.Buffers;
 using System.Runtime.CompilerServices;
 using Silk.NET.Maths;
 using Silk.NET.WebGPU;
-using Wgpu;
+using wgpu = Wgpu;
 using WGPU_TEST;
-using WGPU_TEST.models.core.filters;
+using Wgpu;
 
 namespace GPU_VIEWS.misc
 {
     public interface IResourceManager
     {
-        UniformLayout CreateUniformLayout<TUniform>(TUniform uniform, ShaderType shaderType) where TUniform : unmanaged, IUniform;
+        UniformLayout CreateUniformLayout<TUniform>(TUniform uniform, ShaderType shaderType) where TUniform : unmanaged;
         BufferInternal CreateBuffer(BufferDesc desc);
         BindGroupInternal CreateBindGroup(ReadOnlySpan<BindGroupLayoutEntry> layoutEntries, ReadOnlySpan<BindGroupEntry> groupEntries);
         SamplerPtr CreateSampler();
         RenderPiplineInternal CreateRenderPipeline(RenderPipelineDesc desc);
+        CommandEncoderPtr CreateCommandEncoder(string? name = null);
+        QueuePtr GetQueue();
+        ShaderModulePtr CreateShader(ShaderType shaderType);
     }
 
     public class ResourceManager : IResourceManager
@@ -28,6 +30,16 @@ namespace GPU_VIEWS.misc
             _shaderFactory = new ShaderFactory();
         }
 
+        public QueuePtr GetQueue()
+        {
+            return _device.GetQueue();
+        }
+
+        public CommandEncoderPtr CreateCommandEncoder(string? name = null)
+        {
+            return _device.CreateCommandEncoder(name);
+        }
+
         public BindGroupInternal CreateBindGroup(ReadOnlySpan<BindGroupLayoutEntry> layoutEntries, ReadOnlySpan<BindGroupEntry> groupEntries)
         {
             var layout = _device.CreateBindGroupLayout(layoutEntries);
@@ -36,7 +48,7 @@ namespace GPU_VIEWS.misc
             return new BindGroupInternal(layout, group);
         }
 
-        public UniformLayout CreateUniformLayout<TUniform>(TUniform uniform, ShaderType shaderType) where TUniform : unmanaged, IUniform 
+        public UniformLayout CreateUniformLayout<TUniform>(TUniform uniform, ShaderType shaderType) where TUniform : unmanaged 
         {
             var buffer_size = (ulong)Unsafe.SizeOf<TUniform>();
 
@@ -58,7 +70,7 @@ namespace GPU_VIEWS.misc
         {
             var buffer = _device.CreateBuffer(usage: desc.BufferUsage,
             size: desc.Size,
-            mappedAtCreation: false,
+            mappedAtCreation: desc.MappedAtCreation,
             label: "debug_label");
 
             return new BufferInternal(buffer, desc.Size);
@@ -78,26 +90,17 @@ namespace GPU_VIEWS.misc
                 maxAnisotropy: 1);
         }
 
+        public ShaderModulePtr CreateShader(ShaderType shaderType)
+        {
+            return _shaderFactory.GetOrCreate(_device, shaderType);
+        }
+
         public RenderPiplineInternal CreateRenderPipeline(RenderPipelineDesc desc)
         {
             var pipelineLayout = _device.CreatePipelineLayout(desc.BindGroupLayoutEntries);
 
             var render_pipeline = _device.CreateRenderPipeline(layout: pipelineLayout,
-            vertex: new Wgpu.VertexState
-            {
-                ShaderModule = desc.VertexShader,
-                EntryPoint = "vs_main",
-                Constants = new (string key, double value)[] { },
-                Buffers = new Wgpu.VertexBufferLayout[]
-                {
-                    new Wgpu.VertexBufferLayout((ulong)Unsafe.SizeOf<Vertex>(), VertexStepMode.Vertex,
-                    new VertexAttribute[]
-                    {
-                        new VertexAttribute(VertexFormat.Float32x3, 0, 0),
-                        new VertexAttribute(VertexFormat.Float32x2, (uint)Unsafe.SizeOf<Vector3D<float>>(), 1)
-                    })
-                }
-            },
+            vertex: desc.VertexState,
             primitive: new PrimitiveState
             {
                 Topology = PrimitiveTopology.TriangleList,
@@ -112,11 +115,11 @@ namespace GPU_VIEWS.misc
                 Mask = ~0u,
                 AlphaToCoverageEnabled = false,
             },
-            new Wgpu.FragmentState(
+            new wgpu.FragmentState(
                 shaderModule: desc.FragmentShader,
                 entryPoint: "fs_main",
                 new (string key, double value)[] { },
-                colorTargets: new Wgpu.ColorTargetState[]
+                colorTargets: new wgpu.ColorTargetState[]
                 {
                     new(
                     desc.TextureFormat,

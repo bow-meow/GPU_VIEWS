@@ -5,6 +5,7 @@ using GPU_VIEWS.misc;
 using Silk.NET.WebGPU;
 using SixLabors.ImageSharp.PixelFormats;
 using Wgpu;
+using wgpu = Wgpu;
 
 namespace GPU_VIEWS.renderers
 {
@@ -40,7 +41,7 @@ namespace GPU_VIEWS.renderers
         #region  Font Rendering Methods
         public object CreateTexture(int width, int height)
         {
-            return _device.CreateTexture(TextureUsage.TextureBinding,
+            return _device.CreateTexture(TextureUsage.TextureBinding | TextureUsage.CopyDst,
             TextureDimension.Dimension2D,
             new Extent3D{
                 Width = (uint)width,
@@ -68,7 +69,7 @@ namespace GPU_VIEWS.renderers
 
             var queue = _device.GetQueue();
 
-            queue.WriteTexture<byte>(new Wgpu.ImageCopyTexture
+            queue.WriteTexture<byte>(new wgpu.ImageCopyTexture
             {
                 Texture = tex,
                 Aspect = TextureAspect.All,

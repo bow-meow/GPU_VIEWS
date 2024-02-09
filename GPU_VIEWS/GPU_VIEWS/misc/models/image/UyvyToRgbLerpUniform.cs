@@ -10,7 +10,7 @@ using Wgpu;
 using System.Runtime.CompilerServices;
 using GPU_VIEWS.misc;
 
-namespace WGPU_TEST.models.image
+namespace GPU_VIEWS.msic.models.image
 {
     public struct UyvyToRgbLerpUniform : IUniform
     {

@@ -2,7 +2,6 @@ using GPU_VIEWS.Wgpu.Wgpu.MacOS;
 using Silk.NET.Core.Native;
 using Silk.NET.WebGPU;
 using System;
-using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;

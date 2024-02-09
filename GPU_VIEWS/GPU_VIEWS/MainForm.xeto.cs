@@ -15,6 +15,7 @@ using SharpSize = SixLabors.ImageSharp.Size;
 using EtoSize = Eto.Drawing.Size;
 using System.IO;
 using System.Reflection;
+using GPU_VIEWS.views;
 
 namespace GPU_VIEWS
 {
@@ -29,19 +30,19 @@ namespace GPU_VIEWS
             MainStack = new StackLayout();
             MainTable = new TableLayout();
 
-            for(int i = 0; i < 40; i++)
+            for(int i = 0; i < 2; i++)
             {
                 MainStack.Spacing = 20;
                 var img = SixLabors.ImageSharp.Image.Load<Rgba32>(GetImage());
                 DrawStuff(img);
-                var view = new WgpuView();
+                var view = new ThumbnailView();
                 view.Image = img;
                 view.Size = new EtoSize(500, 500);
                 view.BackgroundColor = Colors.Transparent;
                 MainStack.Items.Add(view);
             }
 
-            var v = new WgpuView();
+            var v = new ThumbnailView();
             var im = SixLabors.ImageSharp.Image.Load<Rgba32>(GetImage());
             v.Image = im;
             v.Size = new EtoSize(1000, 1000);

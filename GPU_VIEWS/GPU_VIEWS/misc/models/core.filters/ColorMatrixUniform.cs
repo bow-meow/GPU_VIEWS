@@ -6,7 +6,7 @@ using System.Net.Http.Headers;
 using System.Runtime.CompilerServices;
 using Wgpu;
 
-namespace WGPU_TEST.models.core.filters
+namespace GPU_VIEWS.msic.models.core.filters
 {
     public struct ColorMatrixUniform : IUniform
     {

@@ -13,4 +13,17 @@
   <ItemGroup>
     <ProjectReference Include="..\GPU_VIEWS.Eto\GPU_VIEWS.Eto.csproj"/>
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="assets\Kaioken_high_quality.png" />
+
+    <EmbeddedResource Include="misc\shaders\font.wgsl" />
+    <EmbeddedResource Include="misc\shaders\quad_font.wgsl" />
+    <EmbeddedResource Include="misc\shaders\quadih.wgsl" />
+    <EmbeddedResource Include="misc\shaders\sample.wgsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="fonts\**">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+</ItemGroup>
 </Project>

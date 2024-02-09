@@ -6,7 +6,7 @@ using Wgpu;
 using System.Runtime.CompilerServices;
 using GPU_VIEWS.misc;
 
-namespace WGPU_TEST.models.chromakey
+namespace GPU_VIEWS.msic.models.chromakey
 {
     public struct ChromaKeyUnifrom : IUniform
     {
