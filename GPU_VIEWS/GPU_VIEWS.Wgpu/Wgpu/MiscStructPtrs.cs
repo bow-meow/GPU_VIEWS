@@ -345,7 +345,8 @@ namespace Wgpu
         }
 
         public static implicit operator Texture*(TexturePtr ptr) => ptr._ptr;
-
+        public static bool operator ==(TexturePtr left, TexturePtr right) => left._ptr == right._ptr;
+        public static bool operator !=(TexturePtr left, TexturePtr right) => left._ptr != right._ptr;
         public TextureViewPtr CreateView(TextureFormat format, TextureViewDimension dimension,
             TextureAspect aspect, uint baseMipLevel, uint mipLevelCount, 
             uint baseArrayLayer, uint arrayLayerCount,

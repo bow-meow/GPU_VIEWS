@@ -162,7 +162,18 @@ namespace GPU_VIEWS.Eto.Controls
 
             Backend = Adapter.GetProperties().BackendType;
 
-            Device = Adapter.RequestDevice(default).Result;
+            var limits = Adapter.GetLimits();
+
+            limits.MaxBufferSize = int.MaxValue;
+
+            unsafe
+            {
+                var r = new RequiredLimits(null,limits);
+                Device = Adapter.RequestDevice(new DeviceDescriptor{
+                    RequiredLimits = &r
+                }).Result;
+            }
+
 
             TextureFormat = Surface.GetPreferredFormat(Adapter);
 

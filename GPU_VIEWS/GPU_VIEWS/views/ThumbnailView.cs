@@ -3,6 +3,7 @@ using System.IO;
 using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
+using Eto.Forms;
 using FontStashSharp;
 using GPU_VIEWS.Eto.Controls;
 using GPU_VIEWS.renderers;
@@ -36,7 +37,19 @@ namespace GPU_VIEWS.views
             Renderer = new WgpuThumbnailRenderer(this);
             Renderer.Initialize(Image);
 
-            base.Draw += Wgpu_Draw;
+            //base.Draw += Wgpu_Draw;
+            Task.Run(async () =>
+            {
+                while(true)
+                {
+                    await Task.Delay(20);
+                    Application.Instance.Invoke(() =>
+                    {
+                        DrawD();
+                    });
+
+                }
+            });
         }
 
         private void Wgpu_Draw(object sender, EventArgs e) => DrawD();
@@ -44,17 +57,21 @@ namespace GPU_VIEWS.views
         private void DrawD()
         {
             
-            var text = "The quick いろは brown\nfox にほへ jumps over\nt🙌h📦e l👏a👏zy dog";
+
+			var text = "saifs a bitch ;D";
 			var scale = new Vector2(2, 2);
-
-			var font = fontSystem.GetFont(12);
-
+				
+			var font = fontSystem.GetFont(30);
+			
 			var size = font.MeasureString(text, scale);
-			var origin = new Vector2(size.X / 2.0f, size.Y / 2.0f);
-
-            font.DrawText(Renderer.TextRenderer, text, new Vector2(100, 100), FSColor.LightCoral, _rads, origin, scale);
-            Renderer.Render();
-            _rads += 0.01f;
+			var origin = new Vector2(size.X / 2.0f, size.Y / 2.0f);		
+            Renderer.Render((pass) =>
+            {
+                Renderer.TextRenderer.RenderPass = pass;
+                font.DrawText(Renderer.TextRenderer, text, new Vector2(400, 400), FSColor.Red, _rads, origin, scale);
+                Renderer.TextRenderer.Render(pass);
+            });
+            _rads += 1.0f;
         }
     }
 }

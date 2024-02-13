@@ -271,7 +271,7 @@ namespace GPU_VIEWS.renderers
 			CreateRenderPipeline();
         }
 
-        public virtual void Render()
+        public virtual void Render(Action<RenderPassEncoderPtr> callback = null)
         {
             CreateVertexBindgroup();
 
@@ -280,7 +280,6 @@ namespace GPU_VIEWS.renderers
 			CreateRenderPipeline();
 
 			var commandEncoder = ResourceManager.CreateCommandEncoder("encoder");
-
 			var surface_tex = _view.Surface.GetCurrentTexture();
 
 			var render_pass = commandEncoder.BeginRenderPass(colorAttachments: new ReadOnlySpan<wgpu.RenderPassColorAttachment>(new wgpu.RenderPassColorAttachment[]
@@ -311,7 +310,7 @@ namespace GPU_VIEWS.renderers
 
             render_pass.DrawIndexed((uint)_indexMap.Length, 1, 0, 0, 0);
 
-            TextRenderer.Render(render_pass);
+            callback?.Invoke(render_pass);
 
             render_pass.End();
 

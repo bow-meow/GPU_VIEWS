@@ -1,9 +1,13 @@
 using System;
 using System.Drawing;
+using System.Linq;
+using System.Reflection;
+using System.Runtime.CompilerServices;
 using FontStashSharp.Interfaces;
 using GPU_VIEWS.misc;
 using Silk.NET.WebGPU;
 using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
 using Wgpu;
 using wgpu = Wgpu;
 
@@ -41,7 +45,7 @@ namespace GPU_VIEWS.renderers
         #region  Font Rendering Methods
         public object CreateTexture(int width, int height)
         {
-            return _device.CreateTexture(TextureUsage.TextureBinding | TextureUsage.CopyDst,
+            return _device.CreateTexture(TextureUsage.TextureBinding | TextureUsage.CopyDst | TextureUsage.CopySrc,
             TextureDimension.Dimension2D,
             new Extent3D{
                 Width = (uint)width,
@@ -57,10 +61,12 @@ namespace GPU_VIEWS.renderers
         public Point GetTextureSize(object texture)
         {
             var tex = (TexturePtr)texture;
-            
-            return new Point((int)tex.GetWidth(), (int)tex.GetHeight());
-        }
 
+            var w = tex.GetWidth();
+            var h = tex.GetHeight();
+            
+            return new Point((int)w, (int)h);
+        }
         public unsafe void SetTextureData(object texture, Rectangle bounds, byte[] data)
         {
             var tex = (TexturePtr)texture;
@@ -74,19 +80,19 @@ namespace GPU_VIEWS.renderers
                 Texture = tex,
                 Aspect = TextureAspect.All,
                 MipLevel = 0,
-                Origin = new Origin3D { X = 0, Y = 0, Z = 0 },
+                Origin = new Origin3D { X = (uint)bounds.Left, Y = (uint)bounds.Top, Z = 0 },
             },
             data: pixels,
             new TextureDataLayout
             {
-                BytesPerRow = (uint)(sizeof(Rgba32) * bounds.Size.Width),
-                RowsPerImage = (uint)bounds.Size.Height,
+                BytesPerRow = (uint)(sizeof(Rgba32) * bounds.Width),
+                RowsPerImage = (uint)bounds.Height,
                 Offset = 0,
             },
             new Extent3D
             {
-                Width = (uint)bounds.Size.Width,
-                Height = (uint)bounds.Size.Height,
+                Width = (uint)bounds.Width,
+                Height = (uint)bounds.Height,
                 DepthOrArrayLayers = 1
             });
         }

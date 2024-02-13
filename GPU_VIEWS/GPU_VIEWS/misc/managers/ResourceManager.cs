@@ -106,7 +106,7 @@ namespace GPU_VIEWS.misc
                 Topology = PrimitiveTopology.TriangleList,
                 StripIndexFormat = IndexFormat.Undefined,
                 FrontFace = FrontFace.Ccw,
-                CullMode = CullMode.Back,
+                CullMode = CullMode.None, // TODO:(ALEX) need to understand this better
             },
             null,
             multisample: new MultisampleState

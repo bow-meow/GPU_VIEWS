@@ -9,16 +9,13 @@ using WGPU_TEST.models.core.filters;
 
 namespace GPU_VIEWS.misc
 {
-	[StructLayout(LayoutKind.Sequential)]
-	public readonly struct FontVertexTransformUniform : IUniform
+	public struct FontVertexTransformUniform : IUniform
 	{
-		public FontVertexTransformUniform(Matrix4X4<float> transform, Vector4D<float> color)
+		public FontVertexTransformUniform(Matrix4X4<float> transform)
 		{
-            Color = color;
             Transform = transform;
 		}
 
-		public Vector4D<float> Color { get; }
         public Matrix4X4<float> Transform { get; }
 	}
 }

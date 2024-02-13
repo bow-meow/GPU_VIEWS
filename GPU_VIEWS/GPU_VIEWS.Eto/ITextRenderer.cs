@@ -8,5 +8,6 @@ namespace GPU_VIEWS.Eto
     {
         void Render(RenderPassEncoderPtr render_pass);
         void Initialize(SixLabors.ImageSharp.Image<Rgba32> image);
+         RenderPassEncoderPtr RenderPass { get; set; }
     }
 }
