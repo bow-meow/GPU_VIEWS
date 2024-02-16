@@ -58,7 +58,7 @@ namespace GPU_VIEWS.views
         {
             
 
-			var text = "saifs a bitch ;D";
+			var text = "matt and nathan round and round";
 			var scale = new Vector2(2, 2);
 				
 			var font = fontSystem.GetFont(30);
