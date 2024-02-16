@@ -1,10 +1,7 @@
 using System;
 using System.Buffers;
 using System.Linq;
-using System.Numerics;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using System.Threading;
 using FontStashSharp.Interfaces;
 using GPU_VIEWS.Eto;
 using GPU_VIEWS.Eto.Controls;
@@ -234,35 +231,12 @@ namespace GPU_VIEWS.renderers
             var m_bottomleft = bottomLeft.ToMe();
             var m_bottomright = bottomRight.ToMe();
 
-            // m_topleft.Position = Convert(m_topleft.Position);
-            // m_topright.Position = Convert(m_topright.Position);
-            // m_bottomleft.Position = Convert(m_bottomleft.Position);
-            // m_bottomright.Position = Convert(m_bottomright.Position);
-
-            // m_topleft.TextureCoordinate.Y = 1 - m_topleft.TextureCoordinate.Y;
-            // m_topright.TextureCoordinate.Y = 1 - m_topright.TextureCoordinate.Y;
-            // m_bottomleft.TextureCoordinate.Y = 1 - m_bottomleft.TextureCoordinate.Y;
-            // m_bottomright.TextureCoordinate.Y = 1 - m_bottomright.TextureCoordinate.Y;
-        
             _vertexData[_vertexIndex++] = m_topleft;
 			_vertexData[_vertexIndex++] = m_topright;
 			_vertexData[_vertexIndex++] = m_bottomleft;
 			_vertexData[_vertexIndex++] = m_bottomright;
 
-            // _vertexData[_vertexIndex++] = m_topleft;
-			// _vertexData[_vertexIndex++] = m_topright;
-			// _vertexData[_vertexIndex++] = m_bottomright;
-			// _vertexData[_vertexIndex++] = m_bottomleft;
-
             _lastTexture = tex;
-        }
-
-        private Vector4D<float> Convert(Vector4D<float> v)
-        {
-            var mat = Silk.NET.Maths.Matrix4X4.CreateOrthographicOffCenter<float>(0, 1280, 800, 0, 0, -1);
-
-            var t1 = Vector4D.Transform(v, mat);
-            return t1;
         }
 
         private static uint[] GenerateIndexArray()

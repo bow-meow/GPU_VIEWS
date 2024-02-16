@@ -1,6 +1,5 @@
 using System;
 using System.Runtime.CompilerServices;
-using FontStashSharp.Interfaces;
 using GPU_VIEWS.Eto;
 using GPU_VIEWS.Eto.Controls;
 using GPU_VIEWS.misc;
@@ -340,11 +339,6 @@ namespace GPU_VIEWS.renderers
             //wgpuSpecific.BindGroupDrop(tex_sampler_bindgroup);
             //wgpuSpecific.BindGroupDrop(frag_uniform_bindgroup);
             //wgpu.BufferUnmap(output_buffer);
-        }
-
-        public void DrawQuad(object texture, ref VertexPositionColorTexture topLeft, ref VertexPositionColorTexture topRight, ref VertexPositionColorTexture bottomLeft, ref VertexPositionColorTexture bottomRight)
-        {
-            
         }
     }
 }
