@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 using System.Numerics;
-using System.Threading;
 using System.Threading.Tasks;
 using Eto.Forms;
 using FontStashSharp;
@@ -34,7 +33,7 @@ namespace GPU_VIEWS.views
 
         private void Wgpu_Init(object sender, EventArgs e)
         {
-            Renderer = new WgpuThumbnailRenderer(this);
+            Renderer = new ImageRenderer(this);
             Renderer.Initialize(Image);
 
             //base.Draw += Wgpu_Draw;
@@ -56,8 +55,6 @@ namespace GPU_VIEWS.views
 
         private void DrawD()
         {
-            
-
 			var text = "matt and nathan round and round";
 			var scale = new Vector2(2, 2);
 				

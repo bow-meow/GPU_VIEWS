@@ -1,6 +1,5 @@
 using System;
 using System.Runtime.CompilerServices;
-using Silk.NET.Maths;
 using Silk.NET.WebGPU;
 using wgpu = Wgpu;
 using WGPU_TEST;

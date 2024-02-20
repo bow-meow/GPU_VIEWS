@@ -11,7 +11,7 @@ using wgpu = Wgpu;
 
 namespace GPU_VIEWS.renderers
 {
-    public class WgpuThumbnailRenderer : IWgpuRenderer
+    public class ImageRenderer : IWgpuRenderer
     {
         private readonly Vertex[] _quad;
         private readonly uint[] _indexMap;
@@ -36,7 +36,7 @@ namespace GPU_VIEWS.renderers
         public int ImageWidth { get; private set; }
         public int ImageHeight { get; private set; }
         // END TODO
-        public WgpuThumbnailRenderer(WgpuView view)
+        public ImageRenderer(WgpuView view)
         {
             _view = view;
 
@@ -321,24 +321,6 @@ namespace GPU_VIEWS.renderers
             _view.Surface.Present();
 
 			_view.RecreateSwapchain();
-		    
-            //unsafe
-            //{
-            //    wgpu.TryGetDeviceExtension(null, out Wgpu wgpuSpecific);
-            //    wgpuSpecific.DevicePoll(device, true, null);
-            //}
-            //swapchain = device.CreateSwapChain(surface, TextureUsage.RenderAttachment, tex_format, (uint)size.Width, (uint)size.Height, PresentMode.Fifo);
-            //swapchain = device.CreateSwapChain(surface, TextureUsage.RenderAttachment, texture_format, (uint)500, (uint)500, PresentMode.Fifo);
-            //bind_tex.Destroy();
-            //output_buffer.Unmap();
-            //_uniform_buffer.Destroy();
-
-            //wgpuSpecific.TextureDrop(tex);
-            //wgpuSpecific.TextureViewDrop(tex_view);
-            //wgpuSpecific.RenderPipelineDrop(pipeline);
-            //wgpuSpecific.BindGroupDrop(tex_sampler_bindgroup);
-            //wgpuSpecific.BindGroupDrop(frag_uniform_bindgroup);
-            //wgpu.BufferUnmap(output_buffer);
         }
     }
 }
